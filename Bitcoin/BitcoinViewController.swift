@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 class BitcoinViewController: UIViewController {
     struct ViewModel {
@@ -13,11 +14,9 @@ class BitcoinViewController: UIViewController {
         let timezone: String
     }
     
-    private var dispatchGroup: DispatchGroup = DispatchGroup()
     private var bitcoinProvider: BitcoinProvider
     private var timezoneProvider: TimezoneProvider
-    private var bitcoinPrices: [Int] = []
-    private var timezone: String = ""
+    private var cancellables: Set<AnyCancellable> = []
     
     init(bitcoinProvider: BitcoinProvider, timezoneProvider: TimezoneProvider) {
         self.bitcoinProvider = bitcoinProvider
@@ -72,58 +71,66 @@ class BitcoinViewController: UIViewController {
     }
     
     private func getDataFromApi() {
-        getBitcoinPriceFromCoincap()
-        getBitcoinPriceFromCoingecko()
-        getTimezoneFromApi()
+        let bitcoinCoincapPublisher = getBitcoinPriceFromCoincap()
+        let bitcoinCoingeckoPublisher = getBitcoinPriceFromCoingecko()
+        let timezoneCountryPublisher = getTimezoneFromApi()
         
-        self.dispatchGroup.notify(queue: .main) { [weak self] in
+        Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
+            guard case .failure(let error) = completion else { return }
+            self?.handleFailure(error)
+        }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
             guard let self = self else { return }
-            let bitcoinAverage = self.bitcoinPrices.reduce(0) { $0 + $1 } / self.bitcoinPrices.count
-            let viewModel = ViewModel(bitcoinPrice: String(bitcoinAverage), timezone: self.timezone)
+            let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
+            let viewModel = ViewModel(bitcoinPrice: String(bitcoinAverage), timezone: timezone)
             self.render(viewModel: viewModel)
+        })
+            .store(in: &cancellables)
+    }
+    
+    private func getTimezoneFromApi() -> AnyPublisher<String, ErrorType> {
+        return Future<String, ErrorType> { [weak self] promise in
+            guard let self = self else { return }
+            
+            self.timezoneProvider.getTimezone { (result: Result<Country, ErrorType>) in
+                switch result {
+                case .success(let country):
+                    promise(.success(country.timezone))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
         }
+        .eraseToAnyPublisher()
     }
     
-    private func getTimezoneFromApi() {
-        dispatchGroup.enter()
-        timezoneProvider.getTimezone(completionHandler: { [weak self] (result: Result<Country, ErrorType>) in
+    private func getBitcoinPriceFromCoincap() -> AnyPublisher<Double, ErrorType> {
+        return Future<Double, ErrorType> { [weak self] promise in
             guard let self = self else { return }
-            defer { self.dispatchGroup.leave() }
-            switch result {
-            case .success(let country):
-                self.timezone = country.timezone
-            case .failure(let error):
-                self.handleFailure(error)
-            }
-        })
+            
+            self.bitcoinProvider.getBitcoinPrice(bitcoinUrl: .coincap, completionHandler: { result in
+                switch result {
+                case .success(let bitcoin):
+                    promise(.success(Double(bitcoin.usd)))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            })
+        }.eraseToAnyPublisher()
     }
     
-    private func getBitcoinPriceFromCoincap() {
-        dispatchGroup.enter()
-        bitcoinProvider.getBitcoinPrice(bitcoinUrl: .coincap, completionHandler: { [weak self] result in
+    private func getBitcoinPriceFromCoingecko() -> AnyPublisher<Double, ErrorType> {
+        return Future<Double, ErrorType> { [weak self] promise in
             guard let self = self else { return }
-            defer { self.dispatchGroup.leave() }
-            switch result {
-            case .success(let bitcoin):
-                self.bitcoinPrices.append(bitcoin.usd)
-            case .failure(let error):
-                self.handleFailure(error)
-            }
-        })
-    }
-    
-    private func getBitcoinPriceFromCoingecko() {
-        dispatchGroup.enter()
-        bitcoinProvider.getBitcoinPrice(bitcoinUrl: .coingecko, completionHandler: {[weak self] result in
-            guard let self = self else { return }
-            defer { self.dispatchGroup.leave() }
-            switch result {
-            case .success(let bitcoin):
-                self.bitcoinPrices.append(bitcoin.usd)
-            case .failure(let error):
-                self.handleFailure(error)
-            }
-        })
+            
+            self.bitcoinProvider.getBitcoinPrice(bitcoinUrl: .coingecko, completionHandler: { result in
+                switch result {
+                case .success(let bitcoin):
+                    promise(.success(Double(bitcoin.usd)))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            })
+        }.eraseToAnyPublisher()
     }
 }
 
