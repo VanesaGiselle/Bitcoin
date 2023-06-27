@@ -6,14 +6,15 @@
 //
 
 import UIKit
+import Combine
 
-class BitcoinView: UIViewController {
-    private var presenter: BitcoinPresenter
+class BitcoinViewController: UIViewController {
+    private var bitcoinViewModel: BitcoinViewModel
+    private var cancellables: Set<AnyCancellable> = []
 
-    init(presenter: BitcoinPresenter) {
-        self.presenter = presenter
+    init(bitcoinViewModel: BitcoinViewModel) {
+        self.bitcoinViewModel = bitcoinViewModel
         super.init(nibName: nil, bundle: nil)
-        presenter.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -37,11 +38,7 @@ class BitcoinView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        getDataFromApi()
-    }
-    
-    private func getDataFromApi() {
-        presenter.getDataFromApi()
+        createBindingWithViewModel()
     }
     
     private func setupViews() {
@@ -60,15 +57,27 @@ class BitcoinView: UIViewController {
             timezoneLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-}
-
-extension BitcoinView: BitcoinUI {
-    func render(_ bitcoinPrice: String, _ timezone: String) {
-        bitcoinLabel.text = bitcoinPrice
-        timezoneLabel.text = timezone
-    }
     
-    func handleError(_ error: ErrorType) {
-        self.handleFailure(error)
+    func createBindingWithViewModel() {
+        bitcoinViewModel.$bitcoinAverage
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+            guard let self = self else { return }
+                self.bitcoinLabel.text = self.bitcoinViewModel.bitcoinAverage
+            }).store(in: &cancellables)
+        
+        bitcoinViewModel.$timezone
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+            guard let self = self else { return }
+                self.timezoneLabel.text = self.bitcoinViewModel.timezone
+            }).store(in: &cancellables)
+        
+        bitcoinViewModel.$error
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+            guard let self = self else { return }
+                self.handleFailure(self.bitcoinViewModel.error)
+            }).store(in: &cancellables)
     }
 }

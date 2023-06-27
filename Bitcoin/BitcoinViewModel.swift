@@ -8,13 +8,11 @@
 import Foundation
 import Combine
 
-protocol BitcoinUI {
-    func handleError(_ error: ErrorType)
-    func render(_ bitcoinPrice: String, _ timezone: String)
-}
-
-class BitcoinPresenter {
-    var delegate: BitcoinUI?
+class BitcoinViewModel {
+    @Published var bitcoinAverage: String = ""
+    @Published var timezone: String = ""
+    @Published var error: ErrorType? = nil
+    
     private var bitcoinProvider: BitcoinProvider
     private var timezoneProvider: TimezoneProvider
     private var cancellables: Set<AnyCancellable> = []
@@ -31,11 +29,11 @@ class BitcoinPresenter {
         
         Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
             guard case .failure(let error) = completion, let self = self else { return }
-            self.delegate?.handleError(error)
+            self.error = error
         }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
             guard let self = self else { return }
-            let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
-            self.delegate?.render(String(bitcoinAverage), timezone)
+            self.bitcoinAverage = String((bitcoinCap + bitcoinGecko) / 2)
+            self.timezone = timezone
         })
             .store(in: &cancellables)
     }

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		93A280502A4B51B40060A849 /* BitcoinPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2804F2A4B51B40060A849 /* BitcoinPresenter.swift */; };
+		93A280502A4B51B40060A849 /* BitcoinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */; };
 		93D545042A43A23400A165C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545032A43A23400A165C0 /* AppDelegate.swift */; };
-		93D545082A43A23400A165C0 /* BitcoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545072A43A23400A165C0 /* BitcoinView.swift */; };
+		93D545082A43A23400A165C0 /* BitcoinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545072A43A23400A165C0 /* BitcoinViewController.swift */; };
 		93D5450D2A43A23700A165C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93D5450C2A43A23700A165C0 /* Assets.xcassets */; };
 		93D545102A43A23700A165C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93D5450E2A43A23700A165C0 /* LaunchScreen.storyboard */; };
 		93D5451B2A43A23800A165C0 /* BitcoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D5451A2A43A23800A165C0 /* BitcoinTests.swift */; };
@@ -49,10 +49,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		93A2804F2A4B51B40060A849 /* BitcoinPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinPresenter.swift; sourceTree = "<group>"; };
+		93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinViewModel.swift; sourceTree = "<group>"; };
 		93D545002A43A23400A165C0 /* Bitcoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bitcoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D545032A43A23400A165C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		93D545072A43A23400A165C0 /* BitcoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinView.swift; sourceTree = "<group>"; };
+		93D545072A43A23400A165C0 /* BitcoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinViewController.swift; sourceTree = "<group>"; };
 		93D5450C2A43A23700A165C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		93D5450F2A43A23700A165C0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		93D545112A43A23700A165C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -126,8 +126,8 @@
 			isa = PBXGroup;
 			children = (
 				93D545032A43A23400A165C0 /* AppDelegate.swift */,
-				93D545072A43A23400A165C0 /* BitcoinView.swift */,
-				93A2804F2A4B51B40060A849 /* BitcoinPresenter.swift */,
+				93D545072A43A23400A165C0 /* BitcoinViewController.swift */,
+				93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */,
 				93D545472A4600D100A165C0 /* ViewController+Extension.swift */,
 				93D545332A43CDDA00A165C0 /* Networking.swift */,
 				93D5453B2A45380E00A165C0 /* BitcoinProvider.swift */,
@@ -298,7 +298,7 @@
 			files = (
 				93D5453A2A4536CF00A165C0 /* UrlSessionNetworking.swift in Sources */,
 				93D545442A453A3900A165C0 /* NetworkingBitcoinProvider.swift in Sources */,
-				93D545082A43A23400A165C0 /* BitcoinView.swift in Sources */,
+				93D545082A43A23400A165C0 /* BitcoinViewController.swift in Sources */,
 				93D5454A2A4A0C4C00A165C0 /* TimezoneProvider.swift in Sources */,
 				93D545042A43A23400A165C0 /* AppDelegate.swift in Sources */,
 				93D5454C2A4A0C8800A165C0 /* Country.swift in Sources */,
@@ -309,7 +309,7 @@
 				93D545402A4539D900A165C0 /* ErrorType.swift in Sources */,
 				93D5453E2A45397800A165C0 /* Bitcoin.swift in Sources */,
 				93D545482A4600D100A165C0 /* ViewController+Extension.swift in Sources */,
-				93A280502A4B51B40060A849 /* BitcoinPresenter.swift in Sources */,
+				93A280502A4B51B40060A849 /* BitcoinViewModel.swift in Sources */,
 				93D545382A4490B400A165C0 /* NetworkingError.swift in Sources */,
 				93D5454E2A4A0CFE00A165C0 /* NetworkingTimezoneProvider.swift in Sources */,
 				93D545342A43CDDA00A165C0 /* Networking.swift in Sources */,
