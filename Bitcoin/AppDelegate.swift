@@ -16,7 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let networkingURLSession = URLSessionNetworking()
         let bitcoinProvider = NetworkingBitcoinProvider(networking: networkingURLSession)
         let timezoneProvider = NetworkingTimezoneProvider(networking: networkingURLSession)
-        let rootViewController = BitcoinViewController(bitcoinProvider: bitcoinProvider, timezoneProvider: timezoneProvider)
+        let presenter = BitcoinPresenter(bitcoinProvider: bitcoinProvider, timezoneProvider: timezoneProvider)
+        let rootViewController = BitcoinView(presenter: presenter)
         let principalNavigationController = UINavigationController(rootViewController: rootViewController)
         
         window = UIWindow(frame: UIScreen.main.bounds)

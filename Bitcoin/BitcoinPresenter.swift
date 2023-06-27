@@ -1,19 +1,20 @@
 //
-//  BitcoinViewController.swift
+//  BitcoinPresenter.swift
 //  Bitcoin
 //
-//  Created by Vanesa Korbenfeld on 21/06/2023.
+//  Created by Vanesa Korbenfeld on 27/06/2023.
 //
 
-import UIKit
+import Foundation
 import Combine
 
-class BitcoinViewController: UIViewController {
-    struct ViewModel {
-        let bitcoinPrice: String
-        let timezone: String
-    }
-    
+protocol BitcoinUI {
+    func handleError(_ error: ErrorType)
+    func render(_ bitcoinPrice: String, _ timezone: String)
+}
+
+class BitcoinPresenter {
+    var delegate: BitcoinUI?
     private var bitcoinProvider: BitcoinProvider
     private var timezoneProvider: TimezoneProvider
     private var cancellables: Set<AnyCancellable> = []
@@ -21,68 +22,20 @@ class BitcoinViewController: UIViewController {
     init(bitcoinProvider: BitcoinProvider, timezoneProvider: TimezoneProvider) {
         self.bitcoinProvider = bitcoinProvider
         self.timezoneProvider = timezoneProvider
-        super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private lazy var bitcoinLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .red
-        label.font = UIFont.systemFont(ofSize: 18)
-        return label
-    }()
-    
-    private lazy var timezoneLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .red
-        label.font = UIFont.systemFont(ofSize: 12)
-        return label
-    }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupViews()
-        getDataFromApi()
-    }
-    
-    func render(viewModel: ViewModel) {
-        bitcoinLabel.text = viewModel.bitcoinPrice
-        timezoneLabel.text = viewModel.timezone
-    }
-    
-    private func setupViews() {
-        view.backgroundColor = .white
-        view.addSubview(bitcoinLabel)
-        view.addSubview(timezoneLabel)
-        
-        bitcoinLabel.translatesAutoresizingMaskIntoConstraints = false
-        timezoneLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            bitcoinLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            bitcoinLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
-            timezoneLabel.topAnchor.constraint(equalTo: bitcoinLabel.bottomAnchor, constant:  20),
-            timezoneLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-    }
-    
-    private func getDataFromApi() {
+    func getDataFromApi() {
         let bitcoinCoincapPublisher = getBitcoinPriceFromCoincap()
         let bitcoinCoingeckoPublisher = getBitcoinPriceFromCoingecko()
         let timezoneCountryPublisher = getTimezoneFromApi()
         
         Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
-            guard case .failure(let error) = completion else { return }
-            self?.handleFailure(error)
+            guard case .failure(let error) = completion, let self = self else { return }
+            self.delegate?.handleError(error)
         }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
             guard let self = self else { return }
             let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
-            let viewModel = ViewModel(bitcoinPrice: String(bitcoinAverage), timezone: timezone)
-            self.render(viewModel: viewModel)
+            self.delegate?.render(String(bitcoinAverage), timezone)
         })
             .store(in: &cancellables)
     }
@@ -133,4 +86,3 @@ class BitcoinViewController: UIViewController {
         }.eraseToAnyPublisher()
     }
 }
-
