@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		93A280502A4B51B40060A849 /* BitcoinPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2804F2A4B51B40060A849 /* BitcoinPresenter.swift */; };
+		93A280522A4B73B10060A849 /* BitcoinPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A280512A4B73B10060A849 /* BitcoinPresenterTests.swift */; };
 		93D545042A43A23400A165C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545032A43A23400A165C0 /* AppDelegate.swift */; };
 		93D545082A43A23400A165C0 /* BitcoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545072A43A23400A165C0 /* BitcoinView.swift */; };
 		93D5450D2A43A23700A165C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93D5450C2A43A23700A165C0 /* Assets.xcassets */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		93A2804F2A4B51B40060A849 /* BitcoinPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinPresenter.swift; sourceTree = "<group>"; };
+		93A280512A4B73B10060A849 /* BitcoinPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinPresenterTests.swift; sourceTree = "<group>"; };
 		93D545002A43A23400A165C0 /* Bitcoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bitcoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D545032A43A23400A165C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93D545072A43A23400A165C0 /* BitcoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinView.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				93D5451A2A43A23800A165C0 /* BitcoinTests.swift */,
+				93A280512A4B73B10060A849 /* BitcoinPresenterTests.swift */,
 			);
 			path = BitcoinTests;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				93D5451B2A43A23800A165C0 /* BitcoinTests.swift in Sources */,
+				93A280522A4B73B10060A849 /* BitcoinPresenterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

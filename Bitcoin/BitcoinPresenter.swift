@@ -28,16 +28,46 @@ class BitcoinPresenter {
         let bitcoinCoincapPublisher = getBitcoinPriceFromCoincap()
         let bitcoinCoingeckoPublisher = getBitcoinPriceFromCoingecko()
         let timezoneCountryPublisher = getTimezoneFromApi()
+        var bitcoinCap: Double!
+        var bitcoinGecko: Double!
+        var timezone: String!
         
-        Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
-            guard case .failure(let error) = completion, let self = self else { return }
-            self.delegate?.handleError(error)
-        }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
-            guard let self = self else { return }
-            let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
-            self.delegate?.render(String(bitcoinAverage), timezone)
-        })
-            .store(in: &cancellables)
+        bitcoinCoincapPublisher.sink { [weak self]
+            completion in
+                guard case .failure(let error) = completion, let self = self else { return }
+                self.delegate?.handleError(error)
+        } receiveValue: { value in
+            bitcoinCap = value
+            bitcoinCoingeckoPublisher.sink { [weak self]
+                completion in
+                    guard case .failure(let error) = completion, let self = self else { return }
+                    self.delegate?.handleError(error)
+            } receiveValue: { value in
+                bitcoinGecko = value
+                timezoneCountryPublisher.sink { [weak self]
+                    completion in
+                        guard case .failure(let error) = completion, let self = self else { return }
+                        self.delegate?.handleError(error)
+                } receiveValue: { string in
+                    timezone = string
+                    let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
+                    self.delegate?.render(String(bitcoinAverage), timezone)
+                }
+
+            }
+
+        }
+
+        
+//        Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
+//            guard case .failure(let error) = completion, let self = self else { return }
+//            self.delegate?.handleError(error)
+//        }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
+//            guard let self = self else { return }
+//            let bitcoinAverage = (bitcoinCap + bitcoinGecko) / 2
+//            self.delegate?.render(String(bitcoinAverage), timezone)
+//        })
+//            .store(in: &cancellables)
     }
     
     private func getTimezoneFromApi() -> AnyPublisher<String, ErrorType> {
