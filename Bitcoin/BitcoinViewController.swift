@@ -38,6 +38,7 @@ class BitcoinViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        bitcoinViewModel.getDataFromApi()
         createBindingWithViewModel()
     }
     
@@ -76,8 +77,9 @@ class BitcoinViewController: UIViewController {
         bitcoinViewModel.$error
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] _ in
-            guard let self = self else { return }
-                self.handleFailure(self.bitcoinViewModel.error)
+            guard let self = self, let error = self.bitcoinViewModel.error else { return }
+                
+                self.handleFailure(error)
             }).store(in: &cancellables)
     }
 }
