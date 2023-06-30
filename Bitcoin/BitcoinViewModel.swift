@@ -9,9 +9,27 @@ import Foundation
 import Combine
 
 class BitcoinViewModel {
-    @Published var bitcoinAverage: String = ""
-    @Published var timezone: String = ""
-    @Published var error: ErrorType? = nil
+    @Published var bitcoinAverageText: String = ""
+    @Published var timezoneText: String = ""
+//    @Published var error: ErrorType? = nil
+    @Published var errorAlertTitleText: String = ""
+    @Published var errorAlertButtonText: String = ""
+    @Published var isShowingErrorAlert: Bool = false
+    
+    @Published var isShowingSpinner: Bool = false
+//    let errorAlert = ErrorAlertVM()
+//    class ErrorAlertVM {
+//        @Published var titleText: String = ""
+//        @Published var ButtonText: String = ""
+//        @Published var isShowin: Bool = false
+//    }
+    func onViewAppear() {
+        self.getDataFromApi()
+    }
+    
+    func onErrorAlertButtonTap() {
+        self.isShowingErrorAlert = false
+    }
     
     private var bitcoinProvider: BitcoinProvider
     private var timezoneProvider: TimezoneProvider
@@ -22,18 +40,26 @@ class BitcoinViewModel {
         self.timezoneProvider = timezoneProvider
     }
     
-    func getDataFromApi() {
+    private func getDataFromApi() {
         let bitcoinCoincapPublisher = getBitcoinPriceFromCoincap()
         let bitcoinCoingeckoPublisher = getBitcoinPriceFromCoingecko()
         let timezoneCountryPublisher = getTimezoneFromApi()
         
+        self.isShowingSpinner = true
+        
         Publishers.Zip3(bitcoinCoincapPublisher, bitcoinCoingeckoPublisher, timezoneCountryPublisher).sink(receiveCompletion:{ [weak self] completion in
-            guard case .failure(let error) = completion, let self = self else { return }
-            self.error = error
+            guard case .failure(_) = completion, let self = self else { return }
+            self.isShowingSpinner = false
+            self.errorAlertTitleText = "No internet connection!!"
+            self.errorAlertButtonText = "Please, check and try again!!"
+            self.isShowingErrorAlert = true
+//            self.error = error
         }, receiveValue: { [weak self] bitcoinCap, bitcoinGecko, timezone in
             guard let self = self else { return }
-            self.bitcoinAverage = String((bitcoinCap + bitcoinGecko) / 2)
-            self.timezone = timezone
+            self.isShowingSpinner = false
+            
+            self.bitcoinAverageText = "$B " + String((bitcoinCap + bitcoinGecko) / 2)
+            self.timezoneText = timezone
         })
             .store(in: &cancellables)
     }

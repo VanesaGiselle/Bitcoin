@@ -35,51 +35,90 @@ class BitcoinViewController: UIViewController {
         return label
     }()
     
+    private lazy var spinner: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .large)
+        view.color = .black
+        view.startAnimating()
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        bitcoinViewModel.getDataFromApi()
         createBindingWithViewModel()
+        
+        bitcoinViewModel.onViewAppear()
     }
     
     private func setupViews() {
         view.backgroundColor = .white
         view.addSubview(bitcoinLabel)
         view.addSubview(timezoneLabel)
+        view.addSubview(spinner)
         
         bitcoinLabel.translatesAutoresizingMaskIntoConstraints = false
         timezoneLabel.translatesAutoresizingMaskIntoConstraints = false
+        spinner.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             bitcoinLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             bitcoinLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
             timezoneLabel.topAnchor.constraint(equalTo: bitcoinLabel.bottomAnchor, constant:  20),
-            timezoneLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            timezoneLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
     
     func createBindingWithViewModel() {
-        bitcoinViewModel.$bitcoinAverage
+        bitcoinViewModel.$bitcoinAverageText
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-            guard let self = self else { return }
-                self.bitcoinLabel.text = self.bitcoinViewModel.bitcoinAverage
+            .sink(receiveValue: { [weak self] bitcoinAverage in
+                guard let self = self else { return }
+                self.bitcoinLabel.text = bitcoinAverage
             }).store(in: &cancellables)
         
-        bitcoinViewModel.$timezone
+        bitcoinViewModel.$timezoneText
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
+            .sink(receiveValue: { [weak self] value in
             guard let self = self else { return }
-                self.timezoneLabel.text = self.bitcoinViewModel.timezone
+                self.timezoneLabel.text = value
             }).store(in: &cancellables)
         
-        bitcoinViewModel.$error
+//        bitcoinViewModel.$error
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] value in
+//            guard let self = self, let error = self.bitcoinViewModel.error else { return }
+//
+//                self.handleFailure(error)
+//            }).store(in: &cancellables)
+        
+        bitcoinViewModel.$isShowingSpinner
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-            guard let self = self, let error = self.bitcoinViewModel.error else { return }
-                
-                self.handleFailure(error)
+            .sink(receiveValue: { [weak self] isShowingSpinner in
+            guard let self = self else { return }
+                self.spinner.isHidden = !isShowingSpinner
+            }).store(in: &cancellables)
+
+        Publishers.CombineLatest3(
+            bitcoinViewModel.$isShowingErrorAlert,
+            bitcoinViewModel.$errorAlertTitleText,
+            bitcoinViewModel.$errorAlertButtonText
+        )
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] publishers in
+                guard let self = self else { return }
+                let (isShowinErrorAlert, errorAlertTitleText, errorAlertButtonText) = publishers
+                if isShowinErrorAlert { // esto no me gusta mucho, habría que ver como evitarlo o si se va cuando tengamos un modelo de vista de alerta... 
+                    let alert = UIAlertController(title: errorAlertTitleText, message: nil, preferredStyle: .alert)
+                    alert.addAction(.init(title: errorAlertButtonText, style: .default) { _ in self.bitcoinViewModel.onErrorAlertButtonTap()
+                    })
+                    self.present(alert, animated:  true)
+                } else {
+                    self.dismiss(animated: true)
+                }
             }).store(in: &cancellables)
     }
 }
