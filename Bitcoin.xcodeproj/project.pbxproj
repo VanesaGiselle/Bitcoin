@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		93A280502A4B51B40060A849 /* BitcoinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */; };
+		93A280542A4CCFAA0060A849 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A280532A4CCFAA0060A849 /* Coordinator.swift */; };
 		93D545042A43A23400A165C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545032A43A23400A165C0 /* AppDelegate.swift */; };
 		93D545082A43A23400A165C0 /* BitcoinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D545072A43A23400A165C0 /* BitcoinViewController.swift */; };
 		93D5450D2A43A23700A165C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93D5450C2A43A23700A165C0 /* Assets.xcassets */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinViewModel.swift; sourceTree = "<group>"; };
+		93A280532A4CCFAA0060A849 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		93D545002A43A23400A165C0 /* Bitcoin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bitcoin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D545032A43A23400A165C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93D545072A43A23400A165C0 /* BitcoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinViewController.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 				93A2804F2A4B51B40060A849 /* BitcoinViewModel.swift */,
 				93D545472A4600D100A165C0 /* ViewController+Extension.swift */,
 				93D545332A43CDDA00A165C0 /* Networking.swift */,
+				93A280532A4CCFAA0060A849 /* Coordinator.swift */,
 				93D5453B2A45380E00A165C0 /* BitcoinProvider.swift */,
 				93D545492A4A0C4C00A165C0 /* TimezoneProvider.swift */,
 				93D5454D2A4A0CFE00A165C0 /* NetworkingTimezoneProvider.swift */,
@@ -304,6 +307,7 @@
 				93D5454C2A4A0C8800A165C0 /* Country.swift in Sources */,
 				93D5453C2A45380E00A165C0 /* BitcoinProvider.swift in Sources */,
 				93D545422A453A0100A165C0 /* ErrorManager.swift in Sources */,
+				93A280542A4CCFAA0060A849 /* Coordinator.swift in Sources */,
 				93D545362A43CEBD00A165C0 /* BitcoinFromApi.swift in Sources */,
 				93D545502A4A0E1100A165C0 /* CountryFromApi.swift in Sources */,
 				93D545402A4539D900A165C0 /* ErrorType.swift in Sources */,
